@@ -1,0 +1,30 @@
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Editor / IDE artifacts
+.vscode/
+.idea/
+tempCodeRunnerFile.py
+*.tempCodeRunnerFile
+
+# Large model weights and checkpoints (>100MB)
+models/
+*.pt
+*.pth
+*.onnx
+
+# Output and prediction runs / videos
+runs/
+output_videos/
+*.avi
+
+# Stubs & intermediate data
+stubs/

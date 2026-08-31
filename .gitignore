@@ -1,4 +1,4 @@
-﻿# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -15,16 +15,12 @@ env/
 tempCodeRunnerFile.py
 *.tempCodeRunnerFile
 
-# Large model weights and checkpoints (>100MB)
-models/
+# Large model weights
 *.pt
 *.pth
 *.onnx
 
-# Output and prediction runs / videos
+# Large video files
 runs/
 output_videos/
 *.avi
-
-# Stubs & intermediate data
-stubs/

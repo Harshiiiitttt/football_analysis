@@ -2,16 +2,29 @@ from ultralytics import YOLO
 import supervision as sv
 import pickle
 import numpy as np
+import pandas as pd
 import os
 import cv2
 import sys
 sys.path.append('../')
-from utils.bbox_utils import get_centre_of_bbox, get_bbox_width
+from utils.bbox_utils import get_center_of_bbox, get_bbox_width
 
 class Tracker:
     def __init__(self, model_path):
         self.model = YOLO(model_path)
         self.tracker = sv.ByteTrack() 
+
+    def interpolate_ball_positions(self, ball_positions):
+        ball_positions = [x.get(1, {}).get('bbox', []) for x in ball_positions]
+        df_ball_positions = pd.DataFrame(ball_positions, columns=['x1', 'y1', 'x2', 'y2'])
+
+        # Interpolate missing values
+        df_ball_positions = df_ball_positions.interpolate()
+        df_ball_positions = df_ball_positions.bfill()  # Backfill to handle NaN at the start
+
+        ball_positions = [{1: {"bbox":x}}for x in df_ball_positions.to_numpy().tolist()]
+
+        return ball_positions
 
     def detect_frames(self, frames):
         batch_size = 20
@@ -84,7 +97,7 @@ class Tracker:
 
     def draw_ellipse (self, frame, bbox, color, track_id=None):
         y2 = int(bbox[3])
-        x_centre, _ = get_centre_of_bbox(bbox)
+        x_centre, _ = get_center_of_bbox(bbox)
         width = get_bbox_width(bbox)
 
         #Draw Ellipse
@@ -131,7 +144,7 @@ class Tracker:
 
     def draw_triangle(self, frame, bbox, color):
         y =  int(bbox[1])
-        x,_ = get_centre_of_bbox(bbox)
+        x,_ = get_center_of_bbox(bbox)
 
         triangle_points = np.array([
             [x, y],
@@ -154,7 +167,8 @@ class Tracker:
 
             #Draw Player Annotations
             for player_id, player in player_dict.items():
-                frame = self.draw_ellipse(frame, player["bbox"], (0,0,255), track_id=player_id)
+                color = player.get("team_color", (0,0,255))
+                frame = self.draw_ellipse(frame, player["bbox"], color, track_id=player_id)
 
             #Draw Referee Annotations
             for _, referee in referee_dict.items():
